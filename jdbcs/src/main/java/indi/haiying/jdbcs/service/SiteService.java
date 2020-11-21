@@ -1,29 +1,29 @@
 package indi.haiying.jdbcs.service;
 
-import indi.haiying.jdbcs.dao.JdbcBadDao;
-import indi.haiying.jdbcs.dao.JdbcDao;
+import indi.haiying.jdbcs.dao.Dao;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Setter
 public class SiteService {
 
-    private JdbcBadDao jdbcBadDao = new JdbcBadDao();
+    @Autowired
+    private Dao dao;
 
-    private JdbcDao jdbcDao = new JdbcDao();
+    public SiteService() {
+    }
 
-    public Site getSite0(Integer siteID) {
-
-        Map<String, Object> object = jdbcBadDao.selectOne(
-                "select siteID, siteName, creator, createTime from data_site where siteID = " + siteID);
-
-        return this.toSite(object);
+    public SiteService(Dao dao) {
+        this.dao = dao;
     }
 
     public Site getSite(Integer siteID) {
 
-        Map<String, Object> object = jdbcDao.selectOne(
+        Map<String, Object> object = dao.selectOne(
                 "select siteID, siteName, creator, createTime from data_site where siteID = ?", siteID);
 
         return this.toSite(object);
@@ -31,7 +31,7 @@ public class SiteService {
 
     public List<Site> getAllSites() {
 
-        List<Map<String, Object>> objects = jdbcDao.select(
+        List<Map<String, Object>> objects = dao.select(
                 "select siteID, siteName, creator, createTime from data_site");
 
         return this.toSites(objects);
@@ -39,7 +39,7 @@ public class SiteService {
 
     public int updateSiteName(Integer siteID, String name) {
 
-        return this.jdbcDao.update("update data_site set siteName = ? where siteID = ?", name, siteID);
+        return this.dao.update("update data_site set siteName = ? where siteID = ?", name, siteID);
     }
 
     public int[] updateSiteNames(List<Site> sites) {
@@ -47,13 +47,13 @@ public class SiteService {
         Object[][] params = new Object[sites.size()][2];
         for (int i = 0; i < sites.size(); i++) {
             params[i][0] = sites.get(i).getSiteName();
-            params[i][1] =  sites.get(i).getSiteID();
+            params[i][1] = sites.get(i).getSiteID();
         }
 
-        return this.jdbcDao.updateBatch("update data_site set siteName = ? where siteID = ?", params);
+        return this.dao.updateBatch("update data_site set siteName = ? where siteID = ?", params);
     }
 
-    private List<Site> toSites(List<Map<String, Object>> objects){
+    private List<Site> toSites(List<Map<String, Object>> objects) {
 
         List<Site> sites = new ArrayList<>();
         for (Map<String, Object> object : objects) {
@@ -62,7 +62,7 @@ public class SiteService {
         return sites;
     }
 
-    private Site toSite(Map<String, Object> object){
+    private Site toSite(Map<String, Object> object) {
         Site site = null;
         if (object != null) {
             site = new Site();

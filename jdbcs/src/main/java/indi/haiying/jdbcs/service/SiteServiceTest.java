@@ -1,16 +1,26 @@
 package indi.haiying.jdbcs.service;
 
+import com.zaxxer.hikari.HikariDataSource;
+import indi.haiying.jdbcs.dao.JdbcDao;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class SiteServiceTest {
 
+
     public static void main(String[] args) {
 
-        SiteService siteService = new SiteService();
+        ResourceBundle dataSourceConfig = ResourceBundle.getBundle("config");
 
-        Site site0 = siteService.getSite0(1);
-        System.out.println(site0);
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(dataSourceConfig.getString("dataSource.url"));
+        dataSource.setUsername(dataSourceConfig.getString("dataSource.username"));
+        dataSource.setPassword(dataSourceConfig.getString("dataSource.password"));
+        dataSource.setDriverClassName(dataSourceConfig.getString("dataSource.driver"));
+
+        SiteService siteService = new SiteService(new JdbcDao(dataSource));
 
         Site site = siteService.getSite(2);
         System.out.println(site);
@@ -18,7 +28,7 @@ public class SiteServiceTest {
         List<Site> sites = siteService.getAllSites();
         System.out.println(sites);
 
-        int updated = siteService.updateSiteName(site0.getSiteID(), site0.getSiteName());
+        int updated = siteService.updateSiteName(site.getSiteID(), site.getSiteName());
         System.out.println(updated);
 
         int[] updateds = siteService.updateSiteNames(sites);

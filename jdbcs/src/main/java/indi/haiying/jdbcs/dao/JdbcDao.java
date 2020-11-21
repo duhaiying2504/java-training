@@ -1,37 +1,23 @@
 package indi.haiying.jdbcs.dao;
 
-import com.zaxxer.hikari.HikariDataSource;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
-public class JdbcDao {
+@Setter
+public class JdbcDao implements Dao {
 
-    private String url = "jdbc:mysql://192.168.172.50:6008/csms?rewriteBatchedStatements=true";
-
-    private String username = "dev_user";
-
-    private String password = "dev_password";
-
-    private String driver = "com.mysql.cj.jdbc.Driver";
-
-    HikariDataSource dataSource = null;
+    @Autowired
+    DataSource dataSource = null;
 
     public JdbcDao() {
-//        try {
-//            Class.forName(driver);
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
+    }
 
-        dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        // HikariCP提供的优化设置
-        dataSource.addDataSourceProperty("cachePrepStmts", "true");
-        dataSource.addDataSourceProperty("prepStmtCacheSize", "50");
-        dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    public JdbcDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public List<Map<String, Object>> select(String sql, Object... params) {
@@ -90,10 +76,12 @@ public class JdbcDao {
             updated = preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
             e.printStackTrace();
         } finally {
@@ -111,7 +99,7 @@ public class JdbcDao {
         return this.update(sql, params);
     }
 
-    public int[] updateBatch(String sql, Object[]... paramss){
+    public int[] updateBatch(String sql, Object[]... paramss) {
         Connection connection = null;
 
         int[] updated = null;
@@ -122,10 +110,12 @@ public class JdbcDao {
             updated = preparedStatement.executeBatch();
             connection.commit();
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
             e.printStackTrace();
         } finally {
@@ -178,13 +168,14 @@ public class JdbcDao {
 
     private void closeConnection(Connection connection) {
 
-        try {
-            connection.setAutoCommit(true);
-            // connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (connection != null) {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        dataSource.evictConnection(connection);
     }
 }
