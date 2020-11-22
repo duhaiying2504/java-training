@@ -1,2 +1,5 @@
 # Project exclude paths
 /jdbcs/target/
+/springdemo/.mvn/
+/spring-boot-school-starter/.mvn/
+/school-starter-test/.mvn/
