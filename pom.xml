@@ -11,9 +11,10 @@
     </parent>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>spring-boot-school-starter</module>
-    </modules>
+    <!--    <modules>-->
+    <!--        <module>spring-boot-school-starter</module>-->
+    <!--    </modules>-->
+
     <groupId>indi.haiying</groupId>
     <artifactId>java-training</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -24,8 +25,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
 

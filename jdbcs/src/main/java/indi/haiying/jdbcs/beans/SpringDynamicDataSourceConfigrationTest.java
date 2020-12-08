@@ -3,19 +3,22 @@ package indi.haiying.jdbcs.beans;
 import indi.haiying.jdbcs.dao.Dao;
 import indi.haiying.jdbcs.dao.JdbcDao;
 import indi.haiying.jdbcs.datasource.DataSourceHelper;
+import indi.haiying.jdbcs.datasource.DynamicDataSourceAspect;
+import indi.haiying.jdbcs.datasource.SpringDynamicDataSource;
 import indi.haiying.jdbcs.service.SiteService;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 @Configuration
-public class SpringConfigrationTest {
+@Import({DynamicDataSourceAspect.class})
+@EnableAspectJAutoProxy
+public class SpringDynamicDataSourceConfigrationTest {
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register(SpringConfigrationTest.class);//加载配置类
+        context.register(SpringDynamicDataSourceConfigrationTest.class);//加载配置类
         context.refresh();//刷新并创建容器
 
         SiteService siteService = context.getBean(SiteService.class);
@@ -25,7 +28,11 @@ public class SpringConfigrationTest {
     @Bean
     public DataSource dataSource() {
 
-        return DataSourceHelper.newDataSourceFromProperties("config");
+        Map<Object, Object> targetDataSources = DataSourceHelper.newDataSourcesFromProperties("config");
+        SpringDynamicDataSource dynamicDataSource = new SpringDynamicDataSource(
+                targetDataSources.get("default"), targetDataSources);
+
+        return dynamicDataSource;
     }
 
     @Bean
@@ -39,4 +46,5 @@ public class SpringConfigrationTest {
 
         return new SiteService();
     }
+
 }

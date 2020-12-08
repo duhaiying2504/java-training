@@ -1,6 +1,8 @@
 package indi.haiying.jdbcs.service;
 
 import indi.haiying.jdbcs.dao.Dao;
+import indi.haiying.jdbcs.datasource.DS;
+import indi.haiying.jdbcs.datasource.DataSourceHelper;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,12 +25,17 @@ public class SiteService {
 
     public Site getSite(Integer siteID) {
 
+        DataSourceHelper.setName("readonly");
+
         Map<String, Object> object = dao.selectOne(
                 "select siteID, siteName, creator, createTime from data_site where siteID = ?", siteID);
+
+        DataSourceHelper.clear();
 
         return this.toSite(object);
     }
 
+    @DS("readonly")
     public List<Site> getAllSites() {
 
         List<Map<String, Object>> objects = dao.select(

@@ -1,24 +1,18 @@
 package indi.haiying.jdbcs.service;
 
-import com.zaxxer.hikari.HikariDataSource;
 import indi.haiying.jdbcs.dao.JdbcDao;
+import indi.haiying.jdbcs.datasource.DataSourceHelper;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class SiteServiceTest {
 
 
     public static void main(String[] args) {
 
-        ResourceBundle dataSourceConfig = ResourceBundle.getBundle("config");
-
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(dataSourceConfig.getString("dataSource.url"));
-        dataSource.setUsername(dataSourceConfig.getString("dataSource.username"));
-        dataSource.setPassword(dataSourceConfig.getString("dataSource.password"));
-        dataSource.setDriverClassName(dataSourceConfig.getString("dataSource.driver"));
+        DataSource dataSource = DataSourceHelper.newDataSourceFromProperties("config");
 
         SiteService siteService = new SiteService(new JdbcDao(dataSource));
 

@@ -12,6 +12,7 @@ public class SpringXmlTest {
         SiteService siteService = context.getBean(SiteService.class);
 
         System.out.println(siteService.getAllSites());
+        System.out.println(siteService.updateSiteName(100000, "test"));
     }
 
 }
